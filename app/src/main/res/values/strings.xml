@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TP1</string>
+    <string name="city_default">Québec, Montréal, ...</string>
+    <string name="retry_text">RETRY</string>
 </resources>
