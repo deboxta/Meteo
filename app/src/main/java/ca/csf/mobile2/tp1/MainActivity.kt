@@ -15,12 +15,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var serverRequest : ServerRequest
+        var serverRequest = ServerRequest()
 
         errorGroup = findViewById(R.id.errorGroup)
         tempGroup = findViewById(R.id.tempGroup)
 
         cityEdit = findViewById(R.id.cityEditText)
 
+        serverRequest.execute()
     }
 }
