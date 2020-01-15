@@ -11,8 +11,11 @@
         android:id="@+id/cityEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="text"
         android:hint="@string/city_default"
         android:textColorHint="@android:color/darker_gray"
+        android:textColor="@android:color/background_light"
         android:drawableLeft="@drawable/ic_search"
         android:backgroundTint="@android:color/darker_gray"
         android:layout_margin="10dp"
@@ -20,6 +23,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/errorGroup"
         android:layout_width="wrap_content"
@@ -72,8 +87,8 @@
         android:id="@+id/tempGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids=""
-        android:visibility="visible"
+        app:constraint_referenced_ids="tempImg,cityText,tempText"
+        android:visibility="gone"
         />
 
         <ImageView
@@ -100,17 +115,17 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-    <TextView
-        android:id="@+id/tempText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-30"
-        android:textAlignment="center"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="100dp"
-        app:layout_constraintBottom_toTopOf="@id/cityText"
-        app:layout_constraintLeft_toRightOf="@id/tempImg"
-        app:layout_constraintRight_toRightOf="parent" />
+        <TextView
+            android:id="@+id/tempText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-30"
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="100dp"
+            app:layout_constraintBottom_toTopOf="@id/cityText"
+            app:layout_constraintLeft_toRightOf="@id/tempImg"
+            app:layout_constraintRight_toRightOf="parent" />
 
 
 
