@@ -2,6 +2,7 @@ package ca.csf.mobile2.tp1
 
 import android.content.Context
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -68,8 +69,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createAsync(){
-        serverRequest = FindWeatherAsyncTask(this::onSucces, this::onNoInternetError)
+        serverRequest = FindWeatherAsyncTask(this::onSucces, this::onNoInternetError, this::onServerError)
         serverRequest.execute(cityEdit.text.toString())
+    }
+
+    private fun onServerError(errorCode : Int) {
+        progressBar.visibility = ProgressBar.INVISIBLE
+        updateDisplay(null, errorCode)
     }
 
     private fun resetDisplay(){
@@ -77,14 +83,14 @@ class MainActivity : AppCompatActivity() {
         tempGroup.visibility = Group.GONE
     }
 
-    private fun onSucces(requestObject: RequestObject?) {
+    private fun onSucces(requestObject: RequestObject?, code: Int) {
         progressBar.visibility = ProgressBar.INVISIBLE
-        updateDisplay(requestObject, true)
+        updateDisplay(requestObject, code)
     }
 
     private fun onNoInternetError() {
         progressBar.visibility = ProgressBar.INVISIBLE
-        updateDisplay(null , false)
+        updateDisplay(null , null)
     }
 
     private fun onRetry(view:View){
@@ -97,8 +103,8 @@ class MainActivity : AppCompatActivity() {
         inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.SHOW_FORCED)
     }
 
-    private fun updateDisplay(requestObject : RequestObject?, response : Boolean){
-        if (response && requestObject != null){
+    private fun updateDisplay(requestObject : RequestObject?, code : Int?){
+        if (code == 200 && requestObject != null){
             errorGroup.visibility = Group.GONE
             tempGroup.visibility = Group.VISIBLE
             tempText.text = StringBuilder(requestObject.temperatureInCelsius.toString()+TEMP_SYMBOL)
@@ -113,13 +119,37 @@ class MainActivity : AppCompatActivity() {
         }else{
             tempGroup.visibility = Group.GONE
             errorGroup.visibility = Group.VISIBLE
-            //when(ResponseType.valueOf(response))
-                //ResponseType.Unauthorized -> errorText.text =
+            when(code){
+                401 -> errorText.text = "Unauthorized"
+                403 -> errorText.text = "Forbidden"
+                404 -> errorText.text = "Not found"
+                null -> errorText.text = "No internet"
+            }
 
         }
 
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putCharSequence("CITY_EDIT", cityEdit.text)
+        outState.putCharSequence("TEMP", tempText.text)
+        outState.putCharSequence("CITY_NAME", cityText.text)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        cityEdit.setText(savedInstanceState.getCharSequence(CITY_EDIT))
+        tempText.text = savedInstanceState.getCharSequence(TEMP)
+        cityText.text = savedInstanceState.getCharSequence(CITY_NAME)
+    }
 }
+
+private const val CITY_EDIT = "CITY_EDIT"
+private const val CITY_NAME = "CITY_NAME"
+private const val TEMP = "TEMP"
 
 enum class WeatherTypes{
     CLOUDY,

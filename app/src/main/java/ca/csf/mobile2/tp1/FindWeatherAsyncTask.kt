@@ -15,42 +15,53 @@ import kotlin.text.StringBuilder
 
 data class RequestObject(val city: String, val type: String, val temperatureInCelsius: Int)
 
-class FindWeatherAsyncTask (var onSuccess : (RequestObject) -> Unit, var onNoInternetError : () -> Unit) : AsyncTask<String, Unit, RequestObject>(){
+class FindWeatherAsyncTask (var onSuccess : (RequestObject, Int) -> Unit, var onNoInternetError : () -> Unit, var onServerError : (Int) -> Unit) : AsyncTask<String, Unit, RequestObject>(){
 
     private lateinit var weather : RequestObject
     private lateinit var client : OkHttpClient
     private lateinit var response: Response
+
+    private var isInternetError = false
+    private var isServerError = false
+    private var isRequestOk = false
 
     override fun doInBackground(vararg city: String?): RequestObject? {
         //android.os.Debug.waitForDebugger()
 
         client = OkHttpClient()
 
-        val http = StringBuilder("http://10.200.77.203:8080/api/v1/weather/${city[0]}")
+        val http = StringBuilder("http://$SERVER_IP:8080/api/v1/weather/${city[0]}")
         val request = Request.Builder().url(http.toString()).build()
         try {
             response = client.newCall(request).execute()
             if (response.isSuccessful){
+                isRequestOk = true
 
+                val mapper = jacksonObjectMapper()
+                weather = mapper.readValue(response.body?.string().toString())
+                response.close()
             } else {
-
+                isServerError = true
+                return null
             }
         }catch (e : IOException){
-            onNoInternetError
+            isInternetError = true
             return null
         }
 
-        val mapper = jacksonObjectMapper()
-        weather = mapper.readValue(response.body?.string().toString())
-        response.close()
         return weather
     }
 
     override fun onPostExecute(result: RequestObject?) {
         super.onPostExecute(result)
-        if (result != null)
-            onSuccess(result)
-        else
-            onNoInternetError
+        if (isRequestOk && result != null)
+            onSuccess(result, response.code)
+        else if (isInternetError)
+            onNoInternetError()
+        else if (isServerError)
+            onServerError(response.code)
+
     }
+
 }
+private const val SERVER_IP = "192.168.1.21"
