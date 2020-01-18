@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TP1</string>
+    <string name="city_default">Québec, Montréal, …</string>
+    <string name="retry_text">RÉESSAYER</string>
+    <string name="TempImage">Conteneur pour l\'image de température</string>
+    <string name="cities">Villes ou effectuer la recherche</string>
+    <string name="errorImg">Conteneur d\'image pour les erreurs</string>
+</resources>

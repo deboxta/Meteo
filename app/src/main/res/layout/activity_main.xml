@@ -4,15 +4,125 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/darkishGrey"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/cityEditText"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:maxLines="1"
+        android:inputType="text"
+        android:hint="@string/city_default"
+        android:textColorHint="@android:color/darker_gray"
+        android:textColor="@android:color/background_light"
+        android:drawableStart="@drawable/ic_search"
+        android:backgroundTint="@android:color/darker_gray"
+        android:layout_margin="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:autofillHints="@string/cities" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/errorGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="umbrella,errorText,retryButton"
+        android:visibility="gone"
+        />
+
+        <ImageView
+            android:id="@+id/umbrella"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_umbrella"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cityEditText"
+            app:layout_constraintBottom_toTopOf="@id/errorText"
+            android:contentDescription="@string/errorImg" />
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Hello World!"
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintBottom_toTopOf="@id/retryButton"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/umbrella"
+            />
+
+        <Button
+            android:id="@+id/retryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry_text"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/holo_orange_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/errorText"
+            />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/tempGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="tempImg,cityText,tempText"
+        android:visibility="gone"
+        />
+
+        <ImageView
+            android:id="@+id/tempImg"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:src="@drawable/ic_cloudy"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tempText"
+            app:layout_constraintBottom_toTopOf="@id/cityText"
+            android:contentDescription="@string/TempImage" />
+
+        <TextView
+            android:id="@+id/cityText"
+            android:layout_width="0dp"
+            android:textSize="20sp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/tempText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="100sp"
+            app:layout_constraintBottom_toTopOf="@id/cityText"
+            app:layout_constraintLeft_toRightOf="@id/tempImg"
+            app:layout_constraintRight_toRightOf="parent"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
