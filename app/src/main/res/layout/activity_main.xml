@@ -16,13 +16,13 @@
         android:hint="@string/city_default"
         android:textColorHint="@android:color/darker_gray"
         android:textColor="@android:color/background_light"
-        android:drawableLeft="@drawable/ic_search"
+        android:drawableStart="@drawable/ic_search"
         android:backgroundTint="@android:color/darker_gray"
         android:layout_margin="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        android:autofillHints="@string/cities" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -52,7 +52,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cityEditText"
             app:layout_constraintBottom_toTopOf="@id/errorText"
-            />
+            android:contentDescription="@string/errorImg" />
 
         <TextView
             android:id="@+id/errorText"
@@ -96,14 +96,14 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/tempText"
             app:layout_constraintBottom_toTopOf="@id/cityText"
-            />
+            android:contentDescription="@string/TempImage" />
 
         <TextView
             android:id="@+id/cityText"
             android:layout_width="0dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_height="wrap_content"
-            android:text="Quebec"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@android:color/background_light"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -116,14 +116,13 @@
             android:id="@+id/tempText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-30"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@android:color/darker_gray"
-            android:textSize="100dp"
+            android:textSize="100sp"
             app:layout_constraintBottom_toTopOf="@id/cityText"
             app:layout_constraintLeft_toRightOf="@id/tempImg"
-            app:layout_constraintRight_toRightOf="parent" />
-
-
+            app:layout_constraintRight_toRightOf="parent"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

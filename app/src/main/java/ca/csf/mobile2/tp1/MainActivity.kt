@@ -2,7 +2,6 @@ package ca.csf.mobile2.tp1
 
 import android.content.Context
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -29,7 +28,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var serverRequest : FindWeatherAsyncTask
     private lateinit var progressBar : ProgressBar
 
-    private val TEMP_SYMBOL = "°"
+    private var message : String? = null
+    private var type : String? = null
+    private var city : String? = null
+    private var temp : String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,29 +55,23 @@ class MainActivity : AppCompatActivity() {
 
         retryButton.setOnClickListener(this::onRetry)
 
-        //TODO: maybe change this
         cityEdit.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                hideKeyboard()
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP && cityEdit.text.isNotEmpty()) {
                 progressBar.visibility = ProgressBar.VISIBLE
+                inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.SHOW_FORCED)
                 resetDisplay()
                 createAsync()
 
                 return@OnKeyListener true
             }
-            false
+            true
         })
 
     }
 
     private fun createAsync(){
-        serverRequest = FindWeatherAsyncTask(this::onSucces, this::onNoInternetError, this::onServerError)
+        serverRequest = FindWeatherAsyncTask(this::onSuccess, this::onNoInternetError, this::onServerError)
         serverRequest.execute(cityEdit.text.toString())
-    }
-
-    private fun onServerError(errorCode : Int) {
-        progressBar.visibility = ProgressBar.INVISIBLE
-        updateDisplay(null, errorCode)
     }
 
     private fun resetDisplay(){
@@ -83,14 +79,28 @@ class MainActivity : AppCompatActivity() {
         tempGroup.visibility = Group.GONE
     }
 
-    private fun onSucces(requestObject: RequestObject?, code: Int) {
-        progressBar.visibility = ProgressBar.INVISIBLE
-        updateDisplay(requestObject, code)
+    private fun onServerError(message : String) {
+        this.message = message
+        city = null
+        temp = null
+        type = null
+        updateView(message)
+    }
+
+    private fun onSuccess(requestObject: RequestObject) {
+        city = requestObject.city
+        temp = requestObject.temperatureInCelsius.toString()
+        type = requestObject.type
+        message = null
+        updateView(null)
     }
 
     private fun onNoInternetError() {
-        progressBar.visibility = ProgressBar.INVISIBLE
-        updateDisplay(null , null)
+        city = null
+        temp = null
+        type = null
+        message = null
+        updateView( null)
     }
 
     private fun onRetry(view:View){
@@ -98,18 +108,18 @@ class MainActivity : AppCompatActivity() {
         progressBar.visibility = ProgressBar.VISIBLE
         createAsync()
     }
+    
+    private fun updateView( message: String?){
+        progressBar.visibility = ProgressBar.INVISIBLE
 
-    private fun hideKeyboard(){
-        inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.SHOW_FORCED)
-    }
-
-    private fun updateDisplay(requestObject : RequestObject?, code : Int?){
-        if (code == 200 && requestObject != null){
+        if (city != null && temp != null && type != null){
             errorGroup.visibility = Group.GONE
             tempGroup.visibility = Group.VISIBLE
-            tempText.text = StringBuilder(requestObject.temperatureInCelsius.toString()+TEMP_SYMBOL)
-            cityText.text = requestObject.city
-            when(WeatherTypes.valueOf(requestObject.type)){
+
+            tempText.text = StringBuilder(temp+TEMP_SYMBOL)
+            cityText.text = city
+
+            when(WeatherTypes.valueOf(type.toString())){
                 WeatherTypes.CLOUDY -> tempImg.setImageResource(R.drawable.ic_cloudy)
                 WeatherTypes.SUNNY -> tempImg.setImageResource(R.drawable.ic_sunny)
                 WeatherTypes.SNOW -> tempImg.setImageResource(R.drawable.ic_snow)
@@ -119,12 +129,11 @@ class MainActivity : AppCompatActivity() {
         }else{
             tempGroup.visibility = Group.GONE
             errorGroup.visibility = Group.VISIBLE
-            when(code){
-                401 -> errorText.text = "Unauthorized"
-                403 -> errorText.text = "Forbidden"
-                404 -> errorText.text = "Not found"
-                null -> errorText.text = "No internet"
-            }
+
+            if (message == null)
+                errorText.text = INTERNET_ERROR_MESSAGE
+            else
+                errorText.text = message
 
         }
 
@@ -134,22 +143,36 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
 
         outState.putCharSequence("CITY_EDIT", cityEdit.text)
-        outState.putCharSequence("TEMP", tempText.text)
-        outState.putCharSequence("CITY_NAME", cityText.text)
+        outState.putCharSequence("TEMP", temp)
+        outState.putString("CITY_NAME", city)
+        outState.putString("TYPE", type)
+        outState.putString("MESSAGE", message)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        cityEdit.setText(savedInstanceState.getCharSequence(CITY_EDIT))
-        tempText.text = savedInstanceState.getCharSequence(TEMP)
-        cityText.text = savedInstanceState.getCharSequence(CITY_NAME)
+        this.cityEdit.setText(savedInstanceState.getCharSequence(CITY_EDIT))
+        city = savedInstanceState.getString(CITY_NAME)
+        temp = savedInstanceState.getString(TEMP)
+        type = savedInstanceState.getString(TYPE)
+
+        message = if (savedInstanceState.getString(MESSAGE).toString() == "null")
+            null
+        else
+            savedInstanceState.getString(MESSAGE).toString()
+        updateView(message)
     }
 }
 
 private const val CITY_EDIT = "CITY_EDIT"
 private const val CITY_NAME = "CITY_NAME"
 private const val TEMP = "TEMP"
+private const val TYPE = "TYPE"
+private const val MESSAGE = "MESSAGE"
+
+private const val INTERNET_ERROR_MESSAGE = "Oups...no internet connection."
+private const val TEMP_SYMBOL = "°"
 
 enum class WeatherTypes{
     CLOUDY,
@@ -157,10 +180,4 @@ enum class WeatherTypes{
     SNOW,
     RAIN,
     PARTLY_SUNNY
-}
-
-enum class ResponseType{
-    Unauthorized,
-    Forbidden,
-    NotFound
 }
