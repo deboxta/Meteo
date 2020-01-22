@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">TP1</string>
     <string name="city_default">Québec, Montréal, …</string>
+    <!-- BC : Pourquoi est-ce en majuscules tout à coup ? -->
     <string name="retry_text">RÉESSAYER</string>
     <string name="TempImage">Conteneur pour l\'image de température</string>
     <string name="cities">Villes ou effectuer la recherche</string>

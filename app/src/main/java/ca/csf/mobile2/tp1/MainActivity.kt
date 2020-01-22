@@ -24,11 +24,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var retryButton : Button
     private lateinit var errorText : TextView
 
+    //BC : Propriété aurait du être variable dans "onCreate".
     private lateinit var inputManager: InputMethodManager
     private lateinit var serverRequest : FindWeatherAsyncTask
     private lateinit var progressBar : ProgressBar
 
     private var message : String? = null
+    //BC : Au lieu de décomposer l'objet "RequestObject", pourquoi ne pas l'avoir conservé au complet ?
     private var type : String? = null
     private var city : String? = null
     private var temp : String? = null
@@ -108,7 +110,8 @@ class MainActivity : AppCompatActivity() {
         progressBar.visibility = ProgressBar.VISIBLE
         createAsync()
     }
-    
+
+    //BC : Pourquoi tu reçoit "message" en paramètre si tu l'as déjà en propriété ?
     private fun updateView( message: String?){
         progressBar.visibility = ProgressBar.INVISIBLE
 
@@ -142,6 +145,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
+        //BC : Constantes pas utilisées.
         outState.putCharSequence("CITY_EDIT", cityEdit.text)
         outState.putCharSequence("TEMP", temp)
         outState.putString("CITY_NAME", city)
@@ -157,6 +161,8 @@ class MainActivity : AppCompatActivity() {
         temp = savedInstanceState.getString(TEMP)
         type = savedInstanceState.getString(TYPE)
 
+        //BC : Formattage.
+        //BC : == "null" ?!?!?!?!?!
         message = if (savedInstanceState.getString(MESSAGE).toString() == "null")
             null
         else
@@ -174,6 +180,7 @@ private const val MESSAGE = "MESSAGE"
 private const val INTERNET_ERROR_MESSAGE = "Oups...no internet connection."
 private const val TEMP_SYMBOL = "°"
 
+//BC : Devrait être dans son propre fichier.
 enum class WeatherTypes{
     CLOUDY,
     SUNNY,
